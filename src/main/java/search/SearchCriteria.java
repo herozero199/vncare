@@ -19,7 +19,7 @@ public class SearchCriteria {
     public static List<SearchCriteria> getListSearchCriteria(String search) {
 
         List<SearchCriteria> searchCriteriaList = new ArrayList<>();
-        Pattern pattern = Pattern.compile("(\\w+)(=|<|>|!|>=|<=)([\\w. ]+),");
+        Pattern pattern = Pattern.compile("(\\w+)(=|<|>|!=|>=|<=|\\+|-|\\*|//)([\\w. ]+),");
         Matcher matcher = pattern.matcher(search+",");
         while(matcher.find()) {
             searchCriteriaList.add(new SearchCriteria(matcher.group(1), SearchOperation.getSearchOperation(matcher.group(2)), matcher.group(3)));

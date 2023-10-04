@@ -1,7 +1,5 @@
 package DAO;
 
-import CustomAnnotation.Where;
-import CustomAnnotation.Wheres;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
@@ -23,11 +21,6 @@ public class org_organization extends PanacheEntityBase{
     @Column(name="ORG_TYPE")
     public Integer org_type;
 
-    @Column(name="ORG_LEVEL")
-    @Wheres(value = {
-            @Where(name = "danhsachkhoa", searchOperation = "=", value = "4", connector = "&"),
-            @Where(name = "chitietkhoa", searchOperation = "=", value = "4", connector = "&")
-    })
     public String org_level;
 
     @Column(name="ORG_ADDRESS")
@@ -40,16 +33,9 @@ public class org_organization extends PanacheEntityBase{
     public String db_schema;
 
     @Column(name="PARENT_ID")
-    @Wheres(value = {
-            @Where( name="danhsachkhoa", searchOperation = "=", value = "14331", connector = "&"),
-            @Where( name="chitietkhoa", searchOperation = "=", value = "14331", connector = "&")
-    })
     public Long parent_id;
 
     @Column(name="STATUS")
-    @Wheres(value = {
-            @Where(name="danhsachkhoa", searchOperation = "=", value = "1", connector = "&")
-    })
     public Integer status;
 
     @Column(name="PROVINCE_ID")

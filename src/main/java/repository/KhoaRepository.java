@@ -1,6 +1,5 @@
 package repository;
 
-import CustomAnnotation.*;
 import DAO.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
