@@ -29,12 +29,12 @@ public class KhoaController {
         return khoaService.GetDanhSach(trang, sodong, search, order);
     }
 
-    @Path("chitiet/{OrgId}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getChiTiet(long OrgId) {
-        return khoaService.GetChiTiet(OrgId);
-    }
+//    @Path("chitiet/{OrgId}")
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getChiTiet(long OrgId) {
+//        return khoaService.GetChiTiet(OrgId);
+//    }
 
 //    @Path("them")
 //    @POST

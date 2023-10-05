@@ -29,15 +29,15 @@ public class KhoaService {
         return Response.status(Response.Status.OK).entity(result).build();
     }
 
-    public Response GetChiTiet (long OrgId) {
-        KhoaChiTiet result;
-        try {
-            result = khoaBaseService.GetChiTiet(OrgId);
-        } catch(RuntimeException e) {
-            return new RuntimeExceptionResponse().getExceptionResponse(e);
-        }
-        return Response.status(Response.Status.OK).entity(result).build();
-    }
+//    public Response GetChiTiet (long OrgId) {
+//        KhoaChiTiet result;
+//        try {
+//            result = khoaBaseService.GetChiTiet(OrgId);
+//        } catch(RuntimeException e) {
+//            return new RuntimeExceptionResponse().getExceptionResponse(e);
+//        }
+//        return Response.status(Response.Status.OK).entity(result).build();
+//    }
 
 //    public Response them (org_organization org, dmc_thongtinkhoaphong dmc) {
 //        try {

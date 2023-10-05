@@ -31,23 +31,23 @@ public class KhoaRepository extends  Repo{
         q.setMaxResults(sodong);
         return q.getResultList();
     }
-
-    public KhoaChiTiet GetChiTiet (long OrgId) {
-
-        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
-        CriteriaQuery<KhoaChiTiet> query = builder.createQuery(KhoaChiTiet.class);
-        Root<OrgOrganization> root = query.from(OrgOrganization.class);
-
-        Join<OrgOrganization, DmcThongTinKhoaPhong> join = root.join("khoa", JoinType.LEFT);
-        join.on(builder.and(builder.equal(root.get("org_id"), join.get("khoaid")), builder.equal(join.get("phongid"), 0)));
-
-        query.multiselect(root.get("org_id"), root.get("org_code"), root.get("org_name"), root.get("org_type"), root.get("note"), root.get("status"),
-                          join.get("makhoabyt"), join.get("chuyenkhoaid"));
-        query.where(DanhSach.get(List.of(new org_organization()), builder, List.of(root), List.of(org_id), "chitietkhoa"));
-
-        Query q = super.entityManager.createQuery(query);
-        return (KhoaChiTiet) q.getSingleResult();
-    }
+//
+//    public KhoaChiTiet GetChiTiet (long OrgId) {
+//
+//        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
+//        CriteriaQuery<KhoaChiTiet> query = builder.createQuery(KhoaChiTiet.class);
+//        Root<OrgOrganization> root = query.from(OrgOrganization.class);
+//
+//        Join<OrgOrganization, DmcThongTinKhoaPhong> join = root.join("khoa", JoinType.LEFT);
+//        join.on(builder.and(builder.equal(root.get("org_id"), join.get("khoaid")), builder.equal(join.get("phongid"), 0)));
+//
+//        query.multiselect(root.get("org_id"), root.get("org_code"), root.get("org_name"), root.get("org_type"), root.get("note"), root.get("status"),
+//                          join.get("makhoabyt"), join.get("chuyenkhoaid"));
+//        query.where(DanhSach.get(List.of(new org_organization()), builder, List.of(root), List.of(org_id), "chitietkhoa"));
+//
+//        Query q = super.entityManager.createQuery(query);
+//        return (KhoaChiTiet) q.getSingleResult();
+//    }
 
 //    @Transactional
 //    @Timeout
