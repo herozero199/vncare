@@ -5,6 +5,7 @@ import DAO.OrgOrganization;
 import jakarta.inject.Inject;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import Request.KhoaChiTiet;
 import Request.KhoaDanhSach;
@@ -22,19 +23,19 @@ public class KhoaController {
 
     @Path("danhsach")
     @GET
-    public Response getDanhSach(@QueryParam(value= "trang") Integer trang, @QueryParam(value= "sodong") Integer sodong, @QueryParam(value= "Search") String search,
+    public Response getDanhSach(@QueryParam(value= "trang") Integer trang, @QueryParam(value= "sodong") Integer sodong, @QueryParam(value= "search") String search,
                                 @QueryParam(value= "Order") String order) {
 
-        return khoaService.getDanhSach(trang, sodong, search, order);
+        return khoaService.GetDanhSach(trang, sodong, search, order);
     }
 
-//    @Path("chitiet/{org_id}")
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getChiTiet(long org_id) {
-//        return khoaService.getChiTiet(new SearchCriteria("org_id", SearchOperation.EQUALITY, org_id));
-//    }
-//
+    @Path("chitiet/{OrgId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getChiTiet(long OrgId) {
+        return khoaService.GetChiTiet(OrgId);
+    }
+
 //    @Path("them")
 //    @POST
 //    @Consumes(MediaType.APPLICATION_JSON)

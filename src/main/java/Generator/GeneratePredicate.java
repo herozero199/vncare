@@ -1,10 +1,10 @@
-package GenericParser;
+package Generator;
 
+import Search.Connectors;
+import Search.Operators;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import Search.Connectors;
-import Search.Operators;
 
 public class GeneratePredicate {
 
@@ -51,7 +51,7 @@ public class GeneratePredicate {
         return null;
     }
 
-    static<T> Predicate Generate(String connector, Root<T> root, CriteriaBuilder builder) {
+    public static<T> Predicate Generate(String connector, Root<T> root, CriteriaBuilder builder) {
 
         Connectors co = Connectors.get(connector);
         if(co == Connectors.AND)

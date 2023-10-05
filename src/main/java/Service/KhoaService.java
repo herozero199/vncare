@@ -18,7 +18,7 @@ public class KhoaService {
     @Inject
     KhoaBaseService khoaBaseService;
 
-    public Response getDanhSach (Integer trang, Integer sodong, String search, String order) {
+    public Response GetDanhSach (Integer trang, Integer sodong, String search, String order) {
 
         List<KhoaDanhSach> result;
         try {
@@ -29,16 +29,16 @@ public class KhoaService {
         return Response.status(Response.Status.OK).entity(result).build();
     }
 
-//    public Response getChiTiet (SearchCriteria org_id) {
-//        KhoaChiTiet result;
-//        try {
-//            result = khoaBaseService.getChiTiet(org_id);
-//        } catch(RuntimeException e) {
-//            return new RuntimeExceptionResponse().getExceptionResponse(e);
-//        }
-//        return Response.status(Response.Status.OK).entity(result).build();
-//    }
-//
+    public Response GetChiTiet (long OrgId) {
+        KhoaChiTiet result;
+        try {
+            result = khoaBaseService.GetChiTiet(OrgId);
+        } catch(RuntimeException e) {
+            return new RuntimeExceptionResponse().getExceptionResponse(e);
+        }
+        return Response.status(Response.Status.OK).entity(result).build();
+    }
+
 //    public Response them (org_organization org, dmc_thongtinkhoaphong dmc) {
 //        try {
 //            khoaBaseService.them(org, dmc);

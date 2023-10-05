@@ -1,6 +1,5 @@
-package GenericParser;
+package Generator;
 
-import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 

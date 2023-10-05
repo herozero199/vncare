@@ -20,10 +20,10 @@ public class KhoaBaseService {
         return khoaRepository.getDanhSachKhoa(trang, sodong, search, order);
     }
 
-//    public KhoaChiTiet getChiTiet (SearchCriteria org_id) throws RuntimeException {
-//        return khoaRepository.getChiTiet(org_id);
-//    }
-//
+    public KhoaChiTiet GetChiTiet (long OrgId) throws RuntimeException {
+        return khoaRepository.GetChiTiet(OrgId);
+    }
+
 //    public void them (org_organization org, dmc_thongtinkhoaphong dmc) {
 //        khoaRepository.them(org, dmc);
 //    }

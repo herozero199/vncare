@@ -1,22 +1,22 @@
-package GenericParser;
+package Parser;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import Search.Parenthesis;
 import Search.Operators;
-
+import Generator.GeneratePredicate;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GenericParser {
+public class SearchParser {
 
     CriteriaBuilder builder;
     Predicate predicate;
     Root<?> root;
 
-    public GenericParser(CriteriaBuilder builder, Predicate predicate, Root<?> root) {
+    public SearchParser(CriteriaBuilder builder, Predicate predicate, Root<?> root) {
         this.builder = builder;
         this.predicate = predicate;
         this.root = root;

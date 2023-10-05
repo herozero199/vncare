@@ -1,8 +1,9 @@
 package Repository;
 
 import DAO.*;
-import GenericParser.GenericParser;
-import GenericParser.GenerateSelect;
+import Generator.GenerateSelect;
+import Parser.SearchParser;
+import Request.KhoaChiTiet;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.*;
@@ -19,12 +20,11 @@ public class KhoaRepository extends  Repo{
         CriteriaQuery<KhoaDanhSach> query = builder.createQuery(KhoaDanhSach.class);
         Root<OrgOrganization> root = query.from(OrgOrganization.class);
 
-//        query.multiselect(root.get("OrgId"), root.get("OrgCode"), root.get("OrgName"), root.get("Status"));
         query.multiselect(GenerateSelect.Generate(root, new KhoaDanhSach()));
-        if(search != null) {
-            query.where(new GenericParser(builder, builder.conjunction(), root).Parse(search));
-        }
-//        query.orderBy(builder.desc(root.get("status")), builder.asc(root.get("org_name")), builder.asc(root.get("org_code")));
+        if(search != null)
+            query.where(new SearchParser(builder, builder.conjunction(), root).Parse(search));
+        if(order != null)
+            query.orderBy(builder.desc(root.get("status")), builder.asc(root.get("org_name")), builder.asc(root.get("org_code")));
 
         Query q = super.entityManager.createQuery(query);
         q.setFirstResult(trang * sodong);
@@ -32,22 +32,22 @@ public class KhoaRepository extends  Repo{
         return q.getResultList();
     }
 
-//    public KhoaChiTiet getChiTiet (SearchCriteria org_id) {
-//
-//        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
-//        CriteriaQuery<KhoaChiTiet> query = builder.createQuery(KhoaChiTiet.class);
-//        Root<org_organization> root = query.from(org_organization.class);
-//
-//        Join<org_organization, dmc_thongtinkhoaphong> join = root.join("khoa", JoinType.LEFT);
-//        join.on(builder.and(builder.equal(root.get("org_id"), join.get("khoaid")), builder.equal(join.get("phongid"), 0)));
-//
-//        query.multiselect(root.get("org_id"), root.get("org_code"), root.get("org_name"), root.get("org_type"), root.get("note"), root.get("status"),
-//                          join.get("makhoabyt"), join.get("chuyenkhoaid"));
-//        query.where(DanhSach.get(List.of(new org_organization()), builder, List.of(root), List.of(org_id), "chitietkhoa"));
-//
-//        Query q = super.entityManager.createQuery(query);
-//        return (KhoaChiTiet) q.getSingleResult();
-//    }
+    public KhoaChiTiet GetChiTiet (long OrgId) {
+
+        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
+        CriteriaQuery<KhoaChiTiet> query = builder.createQuery(KhoaChiTiet.class);
+        Root<OrgOrganization> root = query.from(OrgOrganization.class);
+
+        Join<OrgOrganization, DmcThongTinKhoaPhong> join = root.join("khoa", JoinType.LEFT);
+        join.on(builder.and(builder.equal(root.get("org_id"), join.get("khoaid")), builder.equal(join.get("phongid"), 0)));
+
+        query.multiselect(root.get("org_id"), root.get("org_code"), root.get("org_name"), root.get("org_type"), root.get("note"), root.get("status"),
+                          join.get("makhoabyt"), join.get("chuyenkhoaid"));
+        query.where(DanhSach.get(List.of(new org_organization()), builder, List.of(root), List.of(org_id), "chitietkhoa"));
+
+        Query q = super.entityManager.createQuery(query);
+        return (KhoaChiTiet) q.getSingleResult();
+    }
 
 //    @Transactional
 //    @Timeout
