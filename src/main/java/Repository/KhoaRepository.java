@@ -2,6 +2,7 @@ package Repository;
 
 import DAO.*;
 import Generator.GenerateSelect;
+import Parser.OrderParser;
 import Parser.SearchParser;
 import Request.KhoaChiTiet;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -20,11 +21,16 @@ public class KhoaRepository extends  Repo{
         CriteriaQuery<KhoaDanhSach> query = builder.createQuery(KhoaDanhSach.class);
         Root<OrgOrganization> root = query.from(OrgOrganization.class);
 
+        // Select
         query.multiselect(GenerateSelect.Generate(root, new KhoaDanhSach()));
+
+        // Where
         if(search != null)
             query.where(new SearchParser(builder, builder.conjunction(), root).Parse(search));
+
+        // Order
         if(order != null)
-            query.orderBy(builder.desc(root.get("status")), builder.asc(root.get("org_name")), builder.asc(root.get("org_code")));
+            query.orderBy(new OrderParser(builder, builder.conjunction(), root).Parse(order));
 
         Query q = super.entityManager.createQuery(query);
         q.setFirstResult(trang * sodong);
