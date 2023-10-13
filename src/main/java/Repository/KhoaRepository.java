@@ -4,18 +4,24 @@ import DAO.*;
 import Generator.GenerateSelect;
 import Parser.OrderParser;
 import Parser.SearchParser;
-import Request.KhoaChiTiet;
+import Request.Khoa.KhoaChiTiet;
+import jakarta.ejb.Timeout;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.Parameter;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.*;
-import Request.KhoaDanhSach;
+import Request.Khoa.KhoaDanhSach;
+import jakarta.transaction.Transactional;
 
+import javax.security.auth.login.Configuration;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
-public class KhoaRepository extends  Repo{
+public class KhoaRepository extends  Repository{
 
-    public List<KhoaDanhSach> getDanhSachKhoa (Integer trang, Integer sodong, String search, String order) {
+    public List<KhoaDanhSach> GetDanhSachKhoa (Integer trang, Integer sodong, String search, String order) {
 
         CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
         CriteriaQuery<KhoaDanhSach> query = builder.createQuery(KhoaDanhSach.class);
@@ -25,72 +31,94 @@ public class KhoaRepository extends  Repo{
         query.multiselect(GenerateSelect.Generate(root, new KhoaDanhSach()));
 
         // Where
+        OrgOrganization org = new OrgOrganization();
+        query.where( builder.equal(root.get(org.GetLevel()), "4"));
+        query.where( builder.equal(root.get(org.GetMaDonVi()), 14331));
         if(search != null)
             query.where(new SearchParser(builder, builder.conjunction(), root).Parse(search));
 
         // Order
-        if(order != null)
-            query.orderBy(new OrderParser(builder, builder.conjunction(), root).Parse(order));
+        if(order != null) {
+            query.orderBy(new OrderParser<>(builder, builder.conjunction(), root).Parse(order));
+        }
 
         Query q = super.entityManager.createQuery(query);
         q.setFirstResult(trang * sodong);
         q.setMaxResults(sodong);
         return q.getResultList();
     }
-//
-//    public KhoaChiTiet GetChiTiet (long OrgId) {
-//
-//        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
-//        CriteriaQuery<KhoaChiTiet> query = builder.createQuery(KhoaChiTiet.class);
-//        Root<OrgOrganization> root = query.from(OrgOrganization.class);
-//
-//        Join<OrgOrganization, DmcThongTinKhoaPhong> join = root.join("khoa", JoinType.LEFT);
-//        join.on(builder.and(builder.equal(root.get("org_id"), join.get("khoaid")), builder.equal(join.get("phongid"), 0)));
-//
-//        query.multiselect(root.get("org_id"), root.get("org_code"), root.get("org_name"), root.get("org_type"), root.get("note"), root.get("status"),
-//                          join.get("makhoabyt"), join.get("chuyenkhoaid"));
-//        query.where(DanhSach.get(List.of(new org_organization()), builder, List.of(root), List.of(org_id), "chitietkhoa"));
-//
-//        Query q = super.entityManager.createQuery(query);
-//        return (KhoaChiTiet) q.getSingleResult();
-//    }
 
-//    @Transactional
-//    @Timeout
-//    public void them (org_organization org, dmc_thongtinkhoaphong dmc) {
-//        org.persistAndFlush();
-//        dmc.khoaid = org.org_id;
-//        dmc.phongid = 0L;
-//        dmc.csytid = 14331;
-//        dmc.persistAndFlush();
-//    }
-//
-//    @Transactional
-//    @Timeout
-//    public int xoaThongTinKhoa (SearchCriteria org_id) {
-//        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
-//        CriteriaDelete<dmc_thongtinkhoaphong> delete = builder.createCriteriaDelete(dmc_thongtinkhoaphong.class);
-//        Root<dmc_thongtinkhoaphong> root = delete.from(dmc_thongtinkhoaphong.class);
-//        Predicate predicate = new Xoa(builder, builder.conjunction()).getPredicate(root, org_id);
-//
-//        delete.where(predicate);
-//
-//        Query deleteQuery = super.entityManager.createQuery(delete);
-//        return deleteQuery.executeUpdate();
-//    }
-//
-//    @Transactional
-//    @Timeout
-//    public int capnhatStatus (SearchCriteria org_id) {
-//        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
-//        CriteriaUpdate<org_organization> update = builder.createCriteriaUpdate(org_organization.class);
-//        Root<org_organization> root = update.from(org_organization.class);
-//        Predicate predicate = new CapNhat(builder, builder.conjunction()).getPredicate(root, org_id);
-//
-//        update.set("status", 0);
-//        update.where(predicate);
-//
-//        Query deleteQuery = super.entityManager.createQuery(update);
-//        return deleteQuery.executeUpdate();
-//    }
+    public KhoaChiTiet GetChiTiet (long OrgId) throws IllegalAccessException {
+
+        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
+        CriteriaQuery<KhoaChiTiet> query = builder.createQuery(KhoaChiTiet.class);
+        Root<OrgOrganization> root = query.from(OrgOrganization.class);
+
+        OrgOrganization org = new OrgOrganization();
+        DmcThongTinKhoaPhong dmc = new DmcThongTinKhoaPhong();
+
+        // Join
+        Join<OrgOrganization, DmcThongTinKhoaPhong> join = root.join(org.GetThongTinKhoa(), JoinType.LEFT);
+        join.on(builder.and(builder.equal(root.get(org.GetId()), join.get(dmc.GetKhoaId())), builder.equal(join.get(dmc.GetPhongId()), 0)));
+
+        // Select
+        query.multiselect(GenerateSelect.Generate(root, new KhoaChiTiet()));
+
+        // Where
+        query.where(builder.equal(root.get(org.GetLevel()), "4"));
+        query.where(builder.equal(root.get(org.GetMaDonVi()), 14331));
+        query.where(builder.equal(root.get(org.GetId()), OrgId));
+
+        Query q = super.entityManager.createQuery(query);
+        return (KhoaChiTiet) q.getSingleResult();
+    }
+
+    @Transactional
+    @Timeout
+    public void Them (OrgOrganization org, DmcThongTinKhoaPhong dmc) {
+        org.SetMaSoYTe(1);
+        org.SetTrangThai(1);
+        org.persistAndFlush();
+        dmc.SetKhoaId(org.getOrgId());
+        dmc.SetPhongId(0L);
+        dmc.SetCSYTId(14331);
+        dmc.persistAndFlush();
+    }
+
+    @Transactional
+    @Timeout
+    public int XoaThongTinKhoa (long OrgId) {
+        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
+        CriteriaDelete<DmcThongTinKhoaPhong> delete = builder.createCriteriaDelete(DmcThongTinKhoaPhong.class);
+        Root<DmcThongTinKhoaPhong> root = delete.from(DmcThongTinKhoaPhong.class);
+
+        DmcThongTinKhoaPhong dmc = new DmcThongTinKhoaPhong();
+
+        // Where
+        delete.where(builder.equal(root.get(dmc.GetKhoaId()), OrgId));
+        delete.where(builder.equal(root.get(dmc.GetPhongId()), 0));
+
+        Query deleteQuery = super.entityManager.createQuery(delete);
+        return deleteQuery.executeUpdate();
+    }
+
+    @Transactional
+    @Timeout
+    public int CapNhatStatus (long OrgId) {
+
+        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
+        CriteriaUpdate<OrgOrganization> update = builder.createCriteriaUpdate(OrgOrganization.class);
+        Root<OrgOrganization> root = update.from(OrgOrganization.class);
+
+        OrgOrganization org = new OrgOrganization();
+
+        // Set
+        update.set(org.GetTrangThai(), 0);
+
+        // Where
+        update.where(builder.equal(root.get(org.GetId()), OrgId));
+
+        Query deleteQuery = super.entityManager.createQuery(update);
+        return deleteQuery.executeUpdate();
+    }
 }

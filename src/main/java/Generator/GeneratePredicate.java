@@ -6,11 +6,16 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class GeneratePredicate {
 
-    public static<T> Predicate Generate(String key, String operator, String value, Root<T> root, CriteriaBuilder builder) {
+    public static<T> Predicate Generate(String key, String operator, String value, Root<T> root, CriteriaBuilder builder) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
 
         Operators op = Operators.get(operator);
+//        Method m = root.getJavaType().getMethod("get", String.class);
+//        String key = (String) m.invoke(root.getJavaType().getDeclaredConstructors()[0].newInstance(), key);
 
         if(op == Operators.EQUALITY) {
             if(root.get(key).getJavaType() == String.class)
@@ -51,13 +56,12 @@ public class GeneratePredicate {
         return null;
     }
 
-    public static<T> Predicate Generate(String connector, Root<T> root, CriteriaBuilder builder) {
+    public static<T> Predicate Generate(Connectors connector, Root<?> root, CriteriaBuilder builder, Predicate predicate1, Predicate predicate2) {
 
-        Connectors co = Connectors.get(connector);
-        if(co == Connectors.AND)
-            return builder.and();
-        else if(co == Connectors.OR)
-            return builder.or();
+        if(connector == Connectors.AND)
+            return builder.and(predicate1, predicate2);
+        else if(connector == Connectors.OR)
+            return builder.or(predicate1, predicate2);
         return null;
     }
 

@@ -1,6 +1,8 @@
-package Request;
+package Request.Khoa;
 
-public class KhoaDanhSach {
+import Request.Request;
+
+public class KhoaDanhSach extends Request {
 
     private Long OrgId;
     private String OrgCode;

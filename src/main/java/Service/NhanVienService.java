@@ -1,46 +1,45 @@
 package Service;
 
-import DAO.DmcThongTinKhoaPhong;
-import DAO.OrgOrganization;
-import BaseService.KhoaBaseService;
+import BaseService.NhanVienBaseService;
+import DAO.OrgOfficer;
 import ExceptionResponse.RuntimeExceptionResponse;
+import Request.NhanVien.NhanVienDanhSach;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
-import Request.Khoa.KhoaChiTiet;
-import Request.Khoa.KhoaDanhSach;
+
 import java.util.List;
 
 @ApplicationScoped
-public class KhoaService {
+public class NhanVienService {
 
     @Inject
-    KhoaBaseService khoaBaseService;
+    NhanVienBaseService nhanVienBaseService;
 
     public Response GetDanhSach (Integer trang, Integer sodong, String search, String order) {
 
-        List<KhoaDanhSach> result;
+        List<NhanVienDanhSach> result;
         try {
-            result = khoaBaseService.GetDanhSach(trang, sodong, search, order);
+            result = nhanVienBaseService.GetDanhSach(trang, sodong, search, order);
         } catch(RuntimeException | IllegalAccessException e) {
             return RuntimeExceptionResponse.getExceptionResponse(e);
         }
         return Response.status(Response.Status.OK).entity(result).build();
     }
 
-    public Response GetChiTiet (long OrgId) {
-        KhoaChiTiet result;
+    public Response GetChiTiet (long OfficerId) {
+        OrgOfficer result;
         try {
-            result = khoaBaseService.GetChiTiet(OrgId);
+            result = nhanVienBaseService.GetChiTiet(OfficerId);
         } catch(Exception e) {
             return RuntimeExceptionResponse.getExceptionResponse(e);
         }
         return Response.status(Response.Status.OK).entity(result).build();
     }
 
-    public Response them (OrgOrganization org, DmcThongTinKhoaPhong dmc) {
+    public Response them (OrgOfficer nhanVien) {
         try {
-            khoaBaseService.Them(org, dmc);
+            nhanVienBaseService.Them(nhanVien);
         } catch (Exception e) {
             return RuntimeExceptionResponse.getExceptionResponse(e);
         }
@@ -49,11 +48,11 @@ public class KhoaService {
 
     public Response Xoa (long OrgId) {
         try {
-            int deleted = khoaBaseService.XoaThongTinKhoa(OrgId);
-            if(deleted == 0)
-                return Response.status(Response.Status.NOT_FOUND).build();
+//            int deleted = nhanVienBaseService.XoaThongTinNhanVien(OrgId);
+//            if(deleted == 0)
+//                return Response.status(Response.Status.NOT_FOUND).build();
 
-            int updated = khoaBaseService.CapNhatStatus(OrgId);
+            int updated = nhanVienBaseService.CapNhatStatus(OrgId);
             if(updated == 0)
                 return Response.status(Response.Status.NOT_FOUND).build();
 

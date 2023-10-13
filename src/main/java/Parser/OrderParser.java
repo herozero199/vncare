@@ -10,14 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import DAO.DAO;
 
-public class OrderParser {
+public class OrderParser <T>{
 
-    Root<?> root;
+    Root<T> root;
     Predicate predicate;
     CriteriaBuilder builder;
 
-    public OrderParser(CriteriaBuilder builder, Predicate predicate, Root<?> root) {
+    public OrderParser(CriteriaBuilder builder, Predicate predicate, Root<T> root) {
         this.builder = builder;
         this.predicate = predicate;
         this.root = root;
@@ -26,20 +27,22 @@ public class OrderParser {
     public List<Order> Parse(String order) {
 
         String keyRegex = "([\\w_ ]+)";
-        String ascRegex = "(>)";
-        String descRegex = "(<)";
+        String valueRegex = "([><])";
 
-        Pattern pattern = Pattern.compile(keyRegex+"|"+ascRegex+"|"+descRegex+",");
-        Matcher matcher = pattern.matcher(order+",");
+        Pattern pattern = Pattern.compile(keyRegex+valueRegex);
+        Matcher matcher = pattern.matcher(order);
 
         List<Order> result = new ArrayList<>();
         while(matcher.find()) {
 
             String key = matcher.group(1);
-            String asc = matcher.group(2);
-            String desc = matcher.group(3);
+            String value = matcher.group(2);
 
-            result.add(GenerateOrder.Generate(key, asc, desc, root, builder));
+            try {
+                result.add(GenerateOrder.Generate(key, value, root, builder));
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
 
         return result;

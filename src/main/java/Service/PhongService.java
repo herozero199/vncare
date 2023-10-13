@@ -1,27 +1,30 @@
 package Service;
 
+import BaseService.PhongBaseService;
+import BaseService.PhongBaseService;
 import DAO.DmcThongTinKhoaPhong;
 import DAO.OrgOrganization;
-import BaseService.KhoaBaseService;
 import ExceptionResponse.RuntimeExceptionResponse;
+import Request.Phong.PhongChiTiet;
+import Request.Phong.PhongDanhSach;
+import Request.Phong.PhongDanhSach;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
-import Request.Khoa.KhoaChiTiet;
-import Request.Khoa.KhoaDanhSach;
+
 import java.util.List;
 
 @ApplicationScoped
-public class KhoaService {
+public class PhongService {
 
     @Inject
-    KhoaBaseService khoaBaseService;
+    PhongBaseService phongBaseService;
 
     public Response GetDanhSach (Integer trang, Integer sodong, String search, String order) {
 
-        List<KhoaDanhSach> result;
+        List<PhongDanhSach> result;
         try {
-            result = khoaBaseService.GetDanhSach(trang, sodong, search, order);
+            result = phongBaseService.GetDanhSach(trang, sodong, search, order);
         } catch(RuntimeException | IllegalAccessException e) {
             return RuntimeExceptionResponse.getExceptionResponse(e);
         }
@@ -29,9 +32,9 @@ public class KhoaService {
     }
 
     public Response GetChiTiet (long OrgId) {
-        KhoaChiTiet result;
+        PhongChiTiet result;
         try {
-            result = khoaBaseService.GetChiTiet(OrgId);
+            result = phongBaseService.GetChiTiet(OrgId);
         } catch(Exception e) {
             return RuntimeExceptionResponse.getExceptionResponse(e);
         }
@@ -40,7 +43,7 @@ public class KhoaService {
 
     public Response them (OrgOrganization org, DmcThongTinKhoaPhong dmc) {
         try {
-            khoaBaseService.Them(org, dmc);
+            phongBaseService.Them(org, dmc);
         } catch (Exception e) {
             return RuntimeExceptionResponse.getExceptionResponse(e);
         }
@@ -49,11 +52,11 @@ public class KhoaService {
 
     public Response Xoa (long OrgId) {
         try {
-            int deleted = khoaBaseService.XoaThongTinKhoa(OrgId);
-            if(deleted == 0)
-                return Response.status(Response.Status.NOT_FOUND).build();
+//            int deleted = phongBaseService.XoaThongTinPhong(OrgId);
+//            if(deleted == 0)
+//                return Response.status(Response.Status.NOT_FOUND).build();
 
-            int updated = khoaBaseService.CapNhatStatus(OrgId);
+            int updated = phongBaseService.CapNhatStatus(OrgId);
             if(updated == 0)
                 return Response.status(Response.Status.NOT_FOUND).build();
 

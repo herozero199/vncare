@@ -1,5 +1,6 @@
 package Parser;
 
+import Search.Connectors;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -23,7 +24,8 @@ public class SearchParser {
     }
 
     Stack<String> OperandsStack = new Stack<>();
-    Stack<String> OperatorsStack = new Stack<>();
+    Stack<Predicate> PredicatesStack = new Stack<>();
+    Stack<Connectors> ConnectorsStack = new Stack<>();
 
     public Predicate Parse(String search) {
 
@@ -32,7 +34,7 @@ public class SearchParser {
         String valueRegex = "([\\w_. ]+)";
         String connectorRegex = "([&|])";
         String parenthesisRegex = "([()])";
-        String operatorsRegex = "([+:*_=><])";
+        String operatorsRegex = "([+:*_=><!])";
         Pattern pattern= Pattern.compile(keyRegex+"|"+valueRegex+"|"+connectorRegex+"|"+parenthesisRegex+"|"+operatorsRegex);
         Matcher matcher = pattern.matcher(search);
 
@@ -40,53 +42,50 @@ public class SearchParser {
 
             String match = matcher.group();
             if(Parenthesis.get(match) == Parenthesis.RIGHT) {
-                BuildPredicateEndWithParenthesis();
-            } else {
-                if(Operators.get(match) != null)
-                    OperatorsStack.push(match);
-                else
-                    OperandsStack.push(match);
+                BuildPredicate("(");
+                ConnectPredicate();
+            } else if(Connectors.get(match) != null) {
+                ConnectorsStack.push(Connectors.get(match));
+            }else {
+                OperandsStack.push(match);
             }
         }
 
         while(!OperandsStack.empty())
-            BuildPredicate();
+            BuildPredicate(null);
 
-        return predicate;
+        ConnectPredicate();
+
+        return PredicatesStack.pop();
     }
 
-     private void BuildPredicateEndWithParenthesis() {
+    private void ConnectPredicate() {
 
-        while(true) {
-            String value = OperandsStack.pop();
-            String operator = OperatorsStack.pop();
-            String key = OperandsStack.pop();
+        while(!ConnectorsStack.empty()) {
 
-            predicate = builder.and(GeneratePredicate.Generate(key, operator, value, root, builder), predicate);
-
-            String connector = OperandsStack.pop();
-            if(Parenthesis.get(connector) == Parenthesis.LEFT)
-                return;
-
-            predicate = builder.and(GeneratePredicate.Generate(connector, root, builder), predicate);
+            PredicatesStack.push(GeneratePredicate.Generate(ConnectorsStack.pop(), root, builder, PredicatesStack.pop(), PredicatesStack.pop()));
         }
-     }
+    }
 
-     private void BuildPredicate() {
+     private void BuildPredicate(String end) {
 
-         while (true) {
+         boolean con = true;
+         while (con) {
              String value = OperandsStack.pop();
-
-             String operator = OperatorsStack.pop();
+             String operator = OperandsStack.pop();
              String key = OperandsStack.pop();
 
-             predicate = builder.and(GeneratePredicate.Generate(key, operator, value, root, builder), predicate);
+             try {
+                 PredicatesStack.push(GeneratePredicate.Generate(key, operator, value, root, builder));
+             } catch (Exception e ) {
+                 System.out.println(e.getMessage());
+             }
 
-             if(OperandsStack.empty())
-                 return;
-             String connector = OperandsStack.pop();
-
-             predicate = builder.and(GeneratePredicate.Generate(connector, root, builder), predicate);
+             if(OperandsStack.peek().equals(end) || OperandsStack.empty()) {
+                 con = false;
+                 if(!OperandsStack.empty())
+                     OperandsStack.pop();
+             }
          }
      }
 }

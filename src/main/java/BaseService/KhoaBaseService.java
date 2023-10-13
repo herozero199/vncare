@@ -5,8 +5,8 @@ import DAO.OrgOrganization;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import Repository.KhoaRepository;
-import Request.KhoaChiTiet;
-import Request.KhoaDanhSach;
+import Request.Khoa.KhoaChiTiet;
+import Request.Khoa.KhoaDanhSach;
 
 import java.util.List;
 
@@ -16,23 +16,23 @@ public class KhoaBaseService {
     @Inject
     KhoaRepository khoaRepository;
 
-    public List<KhoaDanhSach> getDanhSach (Integer trang, Integer sodong, String search, String order) throws RuntimeException{
-        return khoaRepository.getDanhSachKhoa(trang, sodong, search, order);
+    public List<KhoaDanhSach> GetDanhSach (Integer trang, Integer sodong, String search, String order) throws RuntimeException, IllegalAccessException {
+        return khoaRepository.GetDanhSachKhoa(trang, sodong, search, order);
     }
 
-//    public KhoaChiTiet GetChiTiet (long OrgId) throws RuntimeException {
-//        return khoaRepository.GetChiTiet(OrgId);
-//    }
+    public KhoaChiTiet GetChiTiet (long OrgId) throws RuntimeException, IllegalAccessException {
+        return khoaRepository.GetChiTiet(OrgId);
+    }
 
-//    public void them (org_organization org, dmc_thongtinkhoaphong dmc) {
-//        khoaRepository.them(org, dmc);
-//    }
-//
-//    public int xoaThongTinKhoa (SearchCriteria org_id) {
-//        return khoaRepository.xoaThongTinKhoa(org_id);
-//    }
-//
-//    public int capnhatStatus (SearchCriteria org_id) {
-//        return khoaRepository.capnhatStatus(org_id);
-//    }
+    public void Them (OrgOrganization org, DmcThongTinKhoaPhong dmc) throws IllegalAccessException {
+        khoaRepository.Them(org, dmc);
+    }
+
+    public int XoaThongTinKhoa (long OrgId) {
+        return khoaRepository.XoaThongTinKhoa(OrgId);
+    }
+
+    public int CapNhatStatus (long org_id) throws IllegalAccessException {
+        return khoaRepository.CapNhatStatus(org_id);
+    }
 }
