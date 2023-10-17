@@ -1,6 +1,6 @@
 package Service;
 
-import BaseService.RequestObject;
+import RequestObject.RequestObject;
 import DAO.DAO;
 import DAO.OrgOrganization;
 import DAO.DmcThongTinKhoaPhong;
