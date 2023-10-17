@@ -1,0 +1,5 @@
+select a.orgId as KhoaId, a.orgCode as MaKhoa, a.orgName as TenKhoa, a.status as TrangThai
+from OrgOrganization as a
+where a.orgLevel = "4" and a.parentId = 14331
+  and (1=1 and ?filter)
+order by a.status desc, a.orgName asc, a.orgCode asc

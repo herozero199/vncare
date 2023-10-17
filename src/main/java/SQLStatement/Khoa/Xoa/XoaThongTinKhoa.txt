@@ -1,0 +1,2 @@
+delete from DmcThongTinKhoaPhong
+where phongId=0 and khoaId = ?id

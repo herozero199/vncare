@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Response;
 
 public class RuntimeExceptionResponse {
 
-    public Response getExceptionResponse(RuntimeException e) {
+    public static Response getExceptionResponse(Exception e) {
         if(e instanceof QueryTimeoutException)
             return Response.status(Response.Status.GATEWAY_TIMEOUT).entity(e.getMessage()).build();
         else if(e instanceof NoResultException)

@@ -1,90 +1,29 @@
 package Repository;
 
-import DAO.*;
-import GenericParser.GenericParser;
-import GenericParser.GenerateSelect;
+import DAO.DmcThongTinKhoaPhong;
+import DAO.OrgOrganization;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.Query;
-import jakarta.persistence.criteria.*;
-import Request.KhoaDanhSach;
-
-import java.util.List;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class KhoaRepository extends  Repo{
+public class KhoaRepository extends Repositories {
 
-    public List<KhoaDanhSach> getDanhSachKhoa (Integer trang, Integer sodong, String search, String order) {
+    @Transactional
+    public void themKhoa(OrgOrganization orgOrganization, DmcThongTinKhoaPhong dmcThongTinKhoaPhong) {
+        orgOrganization.provinceId = 1;
+        orgOrganization.status = 1;
+        orgOrganization.orgLevel = "4";
+        orgOrganization.persistAndFlush();
 
-        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
-        CriteriaQuery<KhoaDanhSach> query = builder.createQuery(KhoaDanhSach.class);
-        Root<OrgOrganization> root = query.from(OrgOrganization.class);
-
-//        query.multiselect(root.get("OrgId"), root.get("OrgCode"), root.get("OrgName"), root.get("Status"));
-        query.multiselect(GenerateSelect.Generate(root, new KhoaDanhSach()));
-        if(search != null) {
-            query.where(new GenericParser(builder, builder.conjunction(), root).Parse(search));
-        }
-//        query.orderBy(builder.desc(root.get("status")), builder.asc(root.get("org_name")), builder.asc(root.get("org_code")));
-
-        Query q = super.entityManager.createQuery(query);
-        q.setFirstResult(trang * sodong);
-        q.setMaxResults(sodong);
-        return q.getResultList();
+        dmcThongTinKhoaPhong.khoaId = orgOrganization.orgId;
+        dmcThongTinKhoaPhong.phongId = 0L;
+        dmcThongTinKhoaPhong.persistAndFlush();
     }
 
-//    public KhoaChiTiet getChiTiet (SearchCriteria org_id) {
-//
-//        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
-//        CriteriaQuery<KhoaChiTiet> query = builder.createQuery(KhoaChiTiet.class);
-//        Root<org_organization> root = query.from(org_organization.class);
-//
-//        Join<org_organization, dmc_thongtinkhoaphong> join = root.join("khoa", JoinType.LEFT);
-//        join.on(builder.and(builder.equal(root.get("org_id"), join.get("khoaid")), builder.equal(join.get("phongid"), 0)));
-//
-//        query.multiselect(root.get("org_id"), root.get("org_code"), root.get("org_name"), root.get("org_type"), root.get("note"), root.get("status"),
-//                          join.get("makhoabyt"), join.get("chuyenkhoaid"));
-//        query.where(DanhSach.get(List.of(new org_organization()), builder, List.of(root), List.of(org_id), "chitietkhoa"));
-//
-//        Query q = super.entityManager.createQuery(query);
-//        return (KhoaChiTiet) q.getSingleResult();
-//    }
+    @Transactional
+    public int capNhatTrangThai(String query, Long orgId) {
 
-//    @Transactional
-//    @Timeout
-//    public void them (org_organization org, dmc_thongtinkhoaphong dmc) {
-//        org.persistAndFlush();
-//        dmc.khoaid = org.org_id;
-//        dmc.phongid = 0L;
-//        dmc.csytid = 14331;
-//        dmc.persistAndFlush();
-//    }
-//
-//    @Transactional
-//    @Timeout
-//    public int xoaThongTinKhoa (SearchCriteria org_id) {
-//        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
-//        CriteriaDelete<dmc_thongtinkhoaphong> delete = builder.createCriteriaDelete(dmc_thongtinkhoaphong.class);
-//        Root<dmc_thongtinkhoaphong> root = delete.from(dmc_thongtinkhoaphong.class);
-//        Predicate predicate = new Xoa(builder, builder.conjunction()).getPredicate(root, org_id);
-//
-//        delete.where(predicate);
-//
-//        Query deleteQuery = super.entityManager.createQuery(delete);
-//        return deleteQuery.executeUpdate();
-//    }
-//
-//    @Transactional
-//    @Timeout
-//    public int capnhatStatus (SearchCriteria org_id) {
-//        CriteriaBuilder builder = super.entityManager.getCriteriaBuilder();
-//        CriteriaUpdate<org_organization> update = builder.createCriteriaUpdate(org_organization.class);
-//        Root<org_organization> root = update.from(org_organization.class);
-//        Predicate predicate = new CapNhat(builder, builder.conjunction()).getPredicate(root, org_id);
-//
-//        update.set("status", 0);
-//        update.where(predicate);
-//
-//        Query deleteQuery = super.entityManager.createQuery(update);
-//        return deleteQuery.executeUpdate();
-//    }
+        query = query.replace("?id", String.valueOf(orgId));
+        return entityManager.createQuery(query).executeUpdate();
+    }
 }

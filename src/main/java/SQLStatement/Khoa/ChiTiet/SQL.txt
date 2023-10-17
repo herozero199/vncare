@@ -1,0 +1,6 @@
+select a.orgId, a.orgCode, b.maKhoaByt, a.orgName, a.orgType, a.note, b.chuyenKhoaId
+from OrgOrganization as a
+     left join DmcThongTinKhoaPhong as b on a.orgId=b.khoaId and b.phongId=0
+where a.orgLevel = "4"
+  and a.parentId = 14331
+  and a.orgId = ?id
